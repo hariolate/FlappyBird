@@ -1,0 +1,34 @@
+# macOS's Desktop Services Store
+.DS_Store
+
+[Bb]uild/
+[Bb]uilds/
+[Tt]emp/
+[Oo]bj/
+[Ll]ogs/
+[Ll]ibrary/
+
+# Visual Studio's cache directory
+.vs
+
+# Rider's cache directory
+.idea
+
+# Auto-generated csharp solution
+*.csproj
+*.sln
+
+# Binary build result
+*.pdb
+*.mdb
+*.apk
+*.exe
+*.app
+*.unitypackage
+
+*.user
+*.userprefs
+
+ExportedObj/
+
+.gradle/
