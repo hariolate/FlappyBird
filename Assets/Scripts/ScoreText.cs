@@ -1,21 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Text))]
 public class ScoreText : MonoBehaviour
 {
-    Text scoreText;
+    private Text _scoreText;
 
     private void Start()
     {
-        scoreText = GetComponent<Text>();
-        scoreText.text = "0";
+        _scoreText = GetComponent<Text>();
+        _scoreText.text = "0";
     }
 
-    void OnEnable()
+    private void OnEnable()
     {
-        scoreText.text = GameManager.Instance.CurrentScore.ToString();
+        _scoreText.text = GameManager.instance.CurrentScore.ToString();
     }
 }

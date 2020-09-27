@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -11,7 +9,7 @@ public class GameManager : MonoBehaviour
 
     public Text scoreText;
 
-    enum PageState
+    private enum PageState
     {
         None,
         Start,
@@ -19,23 +17,13 @@ public class GameManager : MonoBehaviour
         Countdown
     }
 
-    int currentScore = 0;
+    public bool GameOver { get; private set; }
 
-    bool gameOver = false;
-
-    public bool GameOver
-    {
-        get
-        {
-            return gameOver;
-        }
-    }
-
-    public static GameManager Instance;
+    public static GameManager instance;
 
     private void Awake()
     {
-        Instance = this;
+        instance = this;
     }
 
     public delegate void GameDelegate();
@@ -70,18 +58,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private string ScoreStr
-    {
-        get
-        {
-            return $"{currentScore}";
-        }
-    }
+    private string ScoreStr => $"{CurrentScore}";
 
     public void ConfirmGameOver()
     {
-        OnGameOverConfirmed();
-        currentScore = 0;
+        OnGameOverConfirmed?.Invoke();
+        CurrentScore = 0;
         scoreText.text = ScoreStr;
         SetPageState(PageState.Start);
     }
@@ -104,18 +86,18 @@ public class GameManager : MonoBehaviour
     private void OnCountdownFinished()
     {
         SetPageState(PageState.None);
-        currentScore = 0;
-        OnGameStarted();
-        gameOver = false;
+        CurrentScore = 0;
+        OnGameStarted?.Invoke();
+        GameOver = false;
     }
 
     private void OnPlayerDied()
     {
-        gameOver = true;
-        int savedScore = PlayerPrefs.GetInt("Highscore");
-        if (currentScore > savedScore)
+        GameOver = true;
+        var savedScore = PlayerPrefs.GetInt("HighScore");
+        if (CurrentScore > savedScore)
         {
-            PlayerPrefs.SetInt("Highscore", currentScore);
+            PlayerPrefs.SetInt("HighScore", CurrentScore);
         }
         SetPageState(PageState.GameOver);
 
@@ -123,7 +105,7 @@ public class GameManager : MonoBehaviour
 
     private void OnPlayerScored()
     {
-        currentScore++;
+        CurrentScore++;
         scoreText.text = ScoreStr;
     }
 
@@ -132,19 +114,7 @@ public class GameManager : MonoBehaviour
         SetPageState(PageState.Countdown);
     }
 
-    public int CurrentScore
-    {
-        get
-        {
-            return currentScore;
-        }
-    }
+    public int CurrentScore { get; private set; }
 
-    public int Highscore
-    {
-        get
-        {
-            return PlayerPrefs.GetInt("Highscore");
-        }
-    }
+    public static int HighScore => PlayerPrefs.GetInt("HighScore");
 }

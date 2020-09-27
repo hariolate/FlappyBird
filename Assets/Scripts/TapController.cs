@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class TapController : MonoBehaviour
@@ -9,31 +7,30 @@ public class TapController : MonoBehaviour
     public float tiltSmooth = 5;
 
     public Vector3 startPos;
-    new Rigidbody2D rigidbody;
+    private Rigidbody2D _rigidbody;
 
-    Quaternion downRotation;
-    Quaternion forwardRoation;
+    private Quaternion _downRotation;
+    private Quaternion _forwardRotation;
 
     private void Start()
     {
-        rigidbody = GetComponent<Rigidbody2D>();
-        downRotation = Quaternion.Euler(0, 0, -90);
-        forwardRoation = Quaternion.Euler(0, 0, 35);
+        _rigidbody = GetComponent<Rigidbody2D>();
+        _downRotation = Quaternion.Euler(0, 0, -90);
+        _forwardRotation = Quaternion.Euler(0, 0, 35);
     }
 
     private void Update()
     {
-        if (!gameManager.GameOver)
+        if (gameManager.GameOver) return;
+        
+        if (Input.GetMouseButtonDown(0))
         {
-            if (Input.GetMouseButtonDown(0))
-            {
-                transform.rotation = forwardRoation;
-                rigidbody.velocity = Vector3.zero;
-                rigidbody.AddForce(Vector2.up * tapForce, ForceMode2D.Force);
-            }
-
-            transform.rotation = Quaternion.Lerp(transform.rotation, downRotation, tiltSmooth * Time.deltaTime);
+            transform.rotation = _forwardRotation;
+            _rigidbody.velocity = Vector3.zero;
+            _rigidbody.AddForce(Vector2.up * tapForce, ForceMode2D.Force);
         }
+
+        transform.rotation = Quaternion.Lerp(transform.rotation, _downRotation, tiltSmooth * Time.deltaTime);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -41,13 +38,13 @@ public class TapController : MonoBehaviour
         if (collision.gameObject.CompareTag("ScoreZone"))
         {
             // Score Event
-            OnPlayerScored();
+            OnPlayerScored?.Invoke();
             // Play a Sound
         }
         if (collision.gameObject.CompareTag("DeadZone"))
         {
-            rigidbody.simulated = false;
-            OnPlayerDied();
+            _rigidbody.simulated = false;
+            OnPlayerDied?.Invoke();
             // Dead Event
         }
     }
@@ -56,34 +53,30 @@ public class TapController : MonoBehaviour
     public static event PlayerDelegate OnPlayerDied;
     public static event PlayerDelegate OnPlayerScored;
 
-    void OnGameStarted()
+    private void OnGameStarted()
     {
-        rigidbody.velocity = Vector3.zero;
-        rigidbody.simulated = true;
+        _rigidbody.velocity = Vector3.zero;
+        _rigidbody.simulated = true;
     }
 
-    void OnGameOverComfirmed()
+    private void OnGameOverConfirmed()
     {
-        transform.localPosition = startPos;
-        transform.rotation = Quaternion.identity;
+        var myTransform = transform;
+        myTransform.localPosition = startPos;
+        myTransform.rotation = Quaternion.identity;
     }
 
     private void OnEnable()
     {
         GameManager.OnGameStarted += OnGameStarted;
-        GameManager.OnGameOverConfirmed += OnGameOverComfirmed;
+        GameManager.OnGameOverConfirmed += OnGameOverConfirmed;
     }
 
     private void OnDisable()
     {
         GameManager.OnGameStarted -= OnGameStarted;
-        GameManager.OnGameOverConfirmed -= OnGameOverComfirmed;
+        GameManager.OnGameOverConfirmed -= OnGameOverConfirmed;
     }
 
-    GameManager gameManager {
-        get
-        {
-            return GameManager.Instance;
-        }
-    }
+    GameManager gameManager => GameManager.instance;
 }
