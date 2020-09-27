@@ -26,7 +26,10 @@ jobs:
       - name: Checkout repository with LFS support
         uses: actions/checkout@v2
         with:
-          lfs: true     
+          lfs: true  
+      - name: Get short SHA
+        id: slug
+        run: echo "::set-output name=sha8::$(echo ${GITHUB_SHA} | cut -c1-8)"
       - name: Enable cache
         uses: actions/cache@v1.1.0
         with:
@@ -37,10 +40,8 @@ jobs:
         with:
           unityVersion: ${{ matrix.unityVersion }}
           targetPlatform: ${{ matrix.targetPlatform }}
-      - name: List build artifact
-        run: ls build/
       - name: Upload build artifact
         uses: actions/upload-artifact@v1
         with:
-          name: Build
+          name: Build-${{ matrix.targetPlatform }}-${{ steps.slug.outputs.sha8 }}
           path: build
