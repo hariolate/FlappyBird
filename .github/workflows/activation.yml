@@ -8,7 +8,7 @@ on:
 jobs:
   activation:
     name: Request manual activation file
-    runs-on: ubuntu-lastest
+    runs-on: ubuntu-latest
     steps:
       - name: Request manual activation file
         id: getManualLicenseFile
