@@ -21,7 +21,6 @@ jobs:
           - StandaloneOSX
           - StandaloneWindows64
           - StandaloneLinux64
-          - WebGL
     steps:
       - name: Checkout repository with LFS support
         uses: actions/checkout@v2
